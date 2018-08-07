@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="ie=edge">
+  <title>Navent</title>
+</head>
+  <style>
+    body {
+      border: 0;
+      margin: 0;
+      box-sizing: border-box;
+    }
+    .container {
+      display: flex;
+      justify-content: center;
+      max-width: 900px;
+      margin: 0 auto;
+    }
+    .row {
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+    }
+    .msg {
+      margin-top: 50px;
+      text-align: center;
+    }
+    .form-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-width: 300px;
+      margin: 50px auto;
+    }
+    .form-group {
+      display: flex;
+      padding: 5px 20px;
+      flex-direction: row;
+      justify-content: space-between;
+      align-items: center;
+      margin: 20px auto;
+    }
+    .form-group label {
+      width: 90px;
+      text-transform: uppercase;
+    }
+    input {
+      margin-left: 20px;
+      padding: 5px 10px;
+      
+    }
+  </style>
+<body>
+  <div class="container">
+    <div class="row">
+      <div class="msg">
+        <h2><strong>NAVENT</strong></h2>
+        <p id="message"></p>
+      </div>
+      <div class="form-container">
+        <form method="post" autocomplete="off" id="pedidoForm">
+          <div class="form-group">
+            <label for="nombre">Nombre: </label>
+            <input type="text" name="nombre" id="nombre" placeholder="Nombre">
+          </div>
+          <div class="form-group">
+            <label for="monto">Monto: </label>
+            <input type="number" min="0" name="monto" id="monto" placeholder="0">
+          </div>
+          <div class="form-group">
+            <label for="descuento">Descuento: </label>
+            <input type="number" min="0" name="descuento" id="descuento" placeholder="0">
+          </div>
+          <div class="form-group">
+            <button type="submit">Guardar</button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="row">
+      <p>ITEM 2:</p>
+      <p>Antes que nada, debe evitarse las columnas nullables y BLOB. Lo recomendable para las columnas tipo BLOB es separarlas en una tabla aparte
+         relacionadas con una FK ya que el costo de las consultas desminuiría considerablemente y sólo tendrían impacto en caso de ser requiridos los valores
+         de esas columnas. De ser posible, guardar la ubicación del archivo en el servidor, en lugar, del archivo mismo como BLOB en la DB.
+         ---
+      </p>
+    </div>
+  </div>
+  <script>
+    const NUMERIC_REGEX = /^\d+$/;
+    const SERVICE_URL = "pedidos/guardar";
+    const formulario = document.getElementById("pedidoForm");
+    const nombre = document.getElementById("nombre");
+    const monto = document.getElementById("monto");
+    const dscto = document.getElementById("descuento");
+    const report = document.getElementById("message");
+
+    monto.addEventListener("keypress", function(event) {
+      if (event.charCode > 31 && (event.charCode < 48 || event.charCode > 57)) {
+        return false;
+      }
+      return true;
+    });
+
+    dscto.addEventListener("keydown", function(event) {
+      if (event.charCode > 31 && (event.charCode < 48 || event.charCode > 57)) {
+        return false;
+      }
+      return true;
+    });
+
+    formulario.addEventListener("submit", function(event) {
+      event.preventDefault();
+      if (!validarNumero(monto.value) || !validarNumero(dscto.value)) {
+        mostrarMensaje("Monto y Descuento deben ser números enteros");
+        return false;
+      }
+      if (nombre.value.length > 100) {
+        mostrarMensaje("El campo nombre no debe superar 100 caracteres de longitud");
+        return false;
+      }
+      const data = new FormData(formulario);
+      event.preventDefault();
+      const ajax = new XMLHttpRequest();
+      ajax.open("POST", SERVICE_URL);
+      ajax.onload = function () {
+        if (xhr.status === 200 && xhr.responseText !== "") {
+          mostrarMensaje('El registro se guardó con éxito: ' + xhr.responseText);
+        }
+        else if (xhr.status !== 200) {
+          mostrarMensaje('Request failed.  Returned status of ' + xhr.status);
+        }
+      }
+      ajax.send(data);
+    });
+
+    function mostrarMensaje(msj) {
+      report.innerText = "";
+      report.innerText = msj;
+      setTimeout(function() {
+        report.innerText = "";
+      }, 2000);
+    }
+
+    function validarNumero(word) {
+      return NUMERIC_REGEX.test(word);
+    }
+  </script>
+</body>
+</html>
