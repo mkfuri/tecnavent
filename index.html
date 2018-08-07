@@ -64,11 +64,11 @@
         <form method="post" autocomplete="off" id="pedidoForm">
           <div class="form-group">
             <label for="nombre">Nombre: </label>
-            <input type="text" name="nombre" id="nombre" placeholder="Nombre">
+            <input type="text" name="nombre" id="nombre" placeholder="Nombre" required>
           </div>
           <div class="form-group">
             <label for="monto">Monto: </label>
-            <input type="number" min="0" name="monto" id="monto" placeholder="0">
+            <input type="number" min="0" name="monto" id="monto" placeholder="0" required>
           </div>
           <div class="form-group">
             <label for="descuento">Descuento: </label>
@@ -115,11 +115,11 @@
     formulario.addEventListener("submit", function(event) {
       event.preventDefault();
       if (!validarNumero(monto.value) || !validarNumero(dscto.value)) {
-        mostrarMensaje("Monto y Descuento deben ser números enteros");
+        mostrarMensaje("* Monto y Descuento deben ser números enteros. \n* El campo Monto es obligatorio.");
         return false;
       }
-      if (nombre.value.length > 100) {
-        mostrarMensaje("El campo nombre no debe superar 100 caracteres de longitud");
+      if (nombre.value.length > 100 || nombre.value.length === 0) {
+        mostrarMensaje("* El campo nombre no debe superar 100 caracteres de longitud y es obligatorio.");
         return false;
       }
       const data = new FormData(formulario);
